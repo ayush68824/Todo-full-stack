@@ -13,9 +13,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3000',
+        target: 'https://todo-full-stack-2.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
@@ -23,17 +23,12 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
   },
   preview: {
     port: process.env.PORT || 5173,
     host: '0.0.0.0'
   },
   define: {
-    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3000')
+    'process.env.VITE_API_URL': JSON.stringify('https://todo-full-stack-2.onrender.com')
   }
 }); 
