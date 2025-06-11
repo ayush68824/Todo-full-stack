@@ -16,12 +16,21 @@ export default defineConfig({
         target: 'https://todo-full-stack-2.onrender.com',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
       },
     },
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
     emptyOutDir: true,
   },
   preview: {
