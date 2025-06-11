@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
 const { authenticateUser } = require('./middleware/auth');
@@ -21,9 +22,11 @@ console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for development
+}));
 app.use(cors({ 
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000', 
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
   credentials: true 
 }));
 
@@ -35,6 +38,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(express.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../Frontend/dist')));
 
 // API Documentation route
 app.get('/', (req, res) => {
@@ -148,6 +154,12 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -181,15 +193,15 @@ const startServer = async () => {
     console.log('MongoDB URI:', mongoURI);
     
     await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     });
     
     console.log('MongoDB connected successfully');
     
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
-      console.log(`API Documentation available at http://localhost:${PORT}`);
+      console.log(`Frontend available at http://localhost:${PORT}`);
     });
     
     // Schedule notifications after server starts
