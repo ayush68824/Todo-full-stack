@@ -9,7 +9,15 @@ const taskRoutes = require('./routes/tasks');
 const { authenticateUser } = require('./middleware/auth');
 const scheduleNotifications = require('./utils/notifications');
 
+// Load environment variables
 dotenv.config();
+
+// Debug: Log environment variables
+console.log('Environment Variables:');
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('PORT:', process.env.PORT);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+
 const app = express();
 
 // Security middleware
@@ -168,17 +176,30 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/todo-app');
-    console.log('MongoDB connected');
+    console.log('Attempting to connect to MongoDB...');
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todo-app';
+    console.log('MongoDB URI:', mongoURI);
+    
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    });
+    
+    console.log('MongoDB connected successfully');
     
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
+      console.log(`API Documentation available at http://localhost:${PORT}`);
     });
     
     // Schedule notifications after server starts
     scheduleNotifications();
   } catch (err) {
     console.error('Failed to start server:', err);
+    console.error('Please make sure MongoDB is running and accessible');
+    console.error('You can either:');
+    console.error('1. Install MongoDB locally: https://www.mongodb.com/try/download/community');
+    console.error('2. Use MongoDB Atlas: https://www.mongodb.com/cloud/atlas');
     process.exit(1);
   }
 };
