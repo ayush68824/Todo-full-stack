@@ -39,8 +39,8 @@ app.use(limiter);
 
 app.use(express.json());
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../Frontend/dist')));
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 // API Documentation route
 app.get('/', (req, res) => {
@@ -157,7 +157,7 @@ app.get('/api/health', (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Error handling middleware

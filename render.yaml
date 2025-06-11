@@ -7,6 +7,9 @@ services:
       cd Frontend
       npm install
       npm run build
+      cd ..
+      mkdir -p public
+      cp -r Frontend/dist/* public/
     startCommand: node api/index.js
     envVars:
       - key: NODE_ENV
