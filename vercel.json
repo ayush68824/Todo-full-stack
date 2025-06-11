@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd Frontend && node build.js",
+  "buildCommand": "cd Frontend && chmod +x build.sh && ./build.sh",
   "outputDirectory": "Frontend/dist",
   "framework": "vite",
   "rewrites": [
