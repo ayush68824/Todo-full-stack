@@ -22,6 +22,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   preview: {
     port: process.env.PORT || 5173,

@@ -40,7 +40,9 @@ app.use(limiter);
 app.use(express.json());
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../public')));
+const publicPath = path.join(__dirname, '../public');
+console.log('Serving static files from:', publicPath);
+app.use(express.static(publicPath));
 
 // API Documentation route
 app.get('/', (req, res) => {
@@ -157,7 +159,9 @@ app.get('/api/health', (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  const indexPath = path.join(__dirname, '../public/index.html');
+  console.log('Serving index.html from:', indexPath);
+  res.sendFile(indexPath);
 });
 
 // Error handling middleware
