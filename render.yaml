@@ -2,14 +2,7 @@ services:
   - type: web
     name: todo-app
     env: node
-    buildCommand: |
-      npm install
-      cd Frontend
-      npm install
-      npm run build
-      cd ..
-      mkdir -p public
-      cp -r Frontend/dist/* public/
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: node api/index.js
     envVars:
       - key: NODE_ENV
