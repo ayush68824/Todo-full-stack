@@ -1,11 +1,16 @@
 {
-  "name": "todo-backend",
+  "name": "todo-fullstack",
   "version": "1.0.0",
-  "description": "Backend API for Todo application",
+  "description": "Full-stack Todo application",
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "nodemon api/index.js"
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd Frontend && npm install && npm run build && cd .. && mkdir -p public && cp -r Frontend/dist/* public/",
+    "build:backend": "npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "nodemon api/index.js",
+    "dev:frontend": "cd Frontend && npm run dev"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
