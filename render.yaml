@@ -6,8 +6,7 @@ services:
       npm install
       cd Frontend
       npm install
-      npm install -g vite
-      npm run build
+      ./node_modules/.bin/vite build
     startCommand: node api/index.js
     envVars:
       - key: NODE_ENV
