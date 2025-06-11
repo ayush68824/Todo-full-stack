@@ -162,24 +162,29 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/todo-app')
-  .then(() => {
-    console.log('MongoDB connected');
-    scheduleNotifications();
-  })
-  .catch(err => console.error('DB connection error:', err));
-// Set port and start server
+// Set port
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
-// Set port and start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Connect to MongoDB and start server
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/todo-app');
+    console.log('MongoDB connected');
+    
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+    
+    // Schedule notifications after server starts
+    scheduleNotifications();
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
 
 // Export app for Vercel
 module.exports = app;
