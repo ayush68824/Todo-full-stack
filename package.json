@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build": "echo 'No build step required for backend'",
+    "vercel-build": "echo 'No build step required for backend'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
