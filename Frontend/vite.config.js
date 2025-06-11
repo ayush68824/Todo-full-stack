@@ -23,4 +23,8 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
+  preview: {
+    port: process.env.PORT || 5173,
+    host: '0.0.0.0'
+  }
 }); 

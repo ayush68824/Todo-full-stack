@@ -18,7 +18,7 @@ services:
     name: todo-frontend
     env: node
     buildCommand: cd Frontend && npm install && npm run build
-    startCommand: cd Frontend && npm run start
+    startCommand: cd Frontend && npm run preview
     envVars:
       - key: VITE_API_URL
         value: https://todo-backend.onrender.com
