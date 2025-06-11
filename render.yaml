@@ -6,7 +6,7 @@ services:
       npm install
       cd Frontend
       npm install
-      ./node_modules/.bin/vite build
+      npm run build
     startCommand: node api/index.js
     envVars:
       - key: NODE_ENV
@@ -15,6 +15,12 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://todo-app.onrender.com
+    healthCheckPath: /api/health
+    autoDeploy: true
     routes:
       - type: rewrite
         source: /*
