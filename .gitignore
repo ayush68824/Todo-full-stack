@@ -1,20 +1,78 @@
-
-# Node modules
+# Dependencies
 node_modules/
+/.pnp
+.pnp.js
 
-# Environment variables
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Vercel build output
-.vercel/
-
-# OS metadata
-.DS_Store
-
-# Optional IDE files
+# Editor directories and files
+.idea/
 .vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vite
+*.local
+
+# Environment variables
+.env
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Vercel / Netlify / other deployment artifacts
+.vercel/
+.netlify/
+
+# OS-specific files
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# React Native
+.expo/
+
+# Cache
+.cache/
+.next/cache/
+*.tsbuildinfo
+
+# Optional: lock files if you're only using one package manager
+# Uncomment the one you're NOT using
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
