@@ -32,5 +32,8 @@ export default defineConfig({
   preview: {
     port: process.env.PORT || 5173,
     host: '0.0.0.0'
+  },
+  define: {
+    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3000')
   }
 }); 
