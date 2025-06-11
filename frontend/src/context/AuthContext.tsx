@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios, { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 
@@ -20,7 +20,7 @@ interface ErrorResponse {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = 'https://todo-full-stack-2.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://todo-full-stack-2.onrender.com/api';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
