@@ -29,6 +29,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.12",
     "react-router-dom": "^7.6.2",
     "react-toastify": "^11.0.5"
   },
