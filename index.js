@@ -28,22 +28,13 @@ app.use(helmet({
 
 // CORS configuration
 const allowedOrigins = [
-  'https://todo-full-stack-2.onrender.com',
-  'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:5173',  // Local development
+  'http://localhost:3000',  // Local development
+  '*'  // Allow all origins for now - you can restrict this later
 ];
 
 app.use(cors({ 
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: '*',  // Allow all origins
   credentials: true 
 }));
 
@@ -171,14 +162,6 @@ app.use('/api/tasks', authenticateUser, taskRoutes);
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
-});
-
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, '../public/index.html');
-  console.log('Serving index.html from:', indexPath);
-  res.sendFile(indexPath);
 });
 
 // Error handling middleware
