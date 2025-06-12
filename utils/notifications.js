@@ -3,16 +3,31 @@ const nodemailer = require('nodemailer');
 const Task = require('../models/Task');
 const User = require('../models/User');
 
-// Create transporter outside the function to reuse it
-const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// Check if email configuration is available
+const isEmailConfigured = () => {
+  return process.env.EMAIL_SERVICE && 
+         process.env.EMAIL_USER && 
+         process.env.EMAIL_PASS;
+};
+
+// Create transporter only if email is configured
+let transporter = null;
+if (isEmailConfigured()) {
+  transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+}
 
 async function sendNotification(userEmail, task) {
+  if (!isEmailConfigured()) {
+    console.log('Email notifications are not configured. Skipping notification for:', task.title);
+    return;
+  }
+
   try {
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -39,6 +54,11 @@ async function sendNotification(userEmail, task) {
 }
 
 function scheduleNotifications() {
+  if (!isEmailConfigured()) {
+    console.log('Email notifications are not configured. Skipping notification scheduler setup.');
+    return;
+  }
+
   // Run daily at 9 AM
   cron.schedule('0 9 * * *', async () => {
     try {
@@ -57,6 +77,8 @@ function scheduleNotifications() {
         status: { $ne: 'Completed' },
       }).populate('userId');
 
+      console.log(`Found ${tasks.length} tasks due tomorrow`);
+
       for (const task of tasks) {
         const user = task.userId;
         if (user?.email) {
@@ -67,6 +89,8 @@ function scheduleNotifications() {
       console.error('Error in notification scheduler:', error);
     }
   });
+
+  console.log('Notification scheduler started successfully');
 }
 
 module.exports = scheduleNotifications;
