@@ -29,7 +29,8 @@ router.post('/register', upload.single('photo'), async (req, res) => {
     const photo = req.file ? `/avatar/${req.file.filename}` : undefined;
     const user = new User({ email, password, name, photo });
     await user.save();
-    res.status(201).json({ message: 'User registered' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.status(201).json({ token, user: user.toObject() });
   } catch (err) {
     res.status(400).json({ error: 'Registration failed', details: err });
   }
@@ -55,7 +56,7 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token: jwtToken, user });
+    res.json({ token: jwtToken, user: user.toObject() });
   } catch (err) {
     res.status(400).json({ error: 'Google authentication failed', details: err.message });
   }
@@ -85,7 +86,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token });
+    res.json({ token, user: user.toObject() });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });
   }

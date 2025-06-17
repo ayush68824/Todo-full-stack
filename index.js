@@ -31,18 +31,27 @@ if (!fs.existsSync(uploadsDir)) {
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP for development
+  crossOriginOpenerPolicy: false, // Disable COOP header
 }));
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173',  // Local development
-  'http://localhost:3000',  // Local development
-  '*'  // Allow all origins for now - you can restrict this later
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://timely-hummingbird-648821.netlify.app', // Netlify frontend
 ];
 
-app.use(cors({ 
-  origin: '*',  // Allow all origins
-  credentials: true 
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
 
 // Rate limiting
