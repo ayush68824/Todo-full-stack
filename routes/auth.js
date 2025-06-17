@@ -74,4 +74,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Profile update (name and photo)
+router.put('/profile', upload.single('photo'), async (req, res) => {
+  try {
+    const userId = req.userId || (req.user && req.user._id);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const update = { name: req.body.name };
+    if (req.file) {
+      update.photo = `/avatar/${req.file.filename}`;
+    }
+    const user = await User.findByIdAndUpdate(userId, update, { new: true });
+    res.json({ user });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update profile', details: err.message });
+  }
+});
+
 module.exports = router;
