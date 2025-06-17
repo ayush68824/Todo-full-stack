@@ -115,7 +115,12 @@ router.post('/login', async (req, res) => {
 // Profile update with improved error handling
 router.put('/profile', authenticateUser, upload.single('photo'), async (req, res) => {
   try {
-    console.log('Profile update attempt:', { userId: req.userId });
+    console.log('Profile update attempt:', { 
+      userId: req.userId,
+      hasFile: !!req.file,
+      fileName: req.file?.filename,
+      body: req.body
+    });
     
     if (!req.userId) {
       console.log('Profile update failed: No user ID in request');
@@ -129,23 +134,54 @@ router.put('/profile', authenticateUser, upload.single('photo'), async (req, res
     }
 
     const update = {};
-    if (req.body.name) update.name = req.body.name;
-    if (req.file) {
-      update.photo = `/avatar/${req.file.filename}`;
-      console.log('Photo uploaded:', update.photo);
+    if (req.body.name) {
+      update.name = req.body.name;
+      console.log('Updating name:', req.body.name);
     }
+
+    if (req.file) {
+      try {
+        const photoPath = `/avatar/${req.file.filename}`;
+        update.photo = photoPath;
+        console.log('Photo uploaded successfully:', photoPath);
+      } catch (fileError) {
+        console.error('Error handling file upload:', fileError);
+        return res.status(500).json({ 
+          error: 'Failed to process photo upload',
+          details: fileError.message 
+        });
+      }
+    }
+
+    console.log('Updating user with data:', update);
 
     const updatedUser = await User.findByIdAndUpdate(
       req.userId,
       { $set: update },
-      { new: true }
-    );
+      { new: true, runValidators: true }
+    ).select('-password'); // Exclude password from response
 
-    console.log('Profile update successful:', { userId: req.userId });
+    if (!updatedUser) {
+      console.log('Profile update failed: User not found after update');
+      return res.status(404).json({ error: 'User not found after update' });
+    }
+
+    console.log('Profile update successful:', { 
+      userId: req.userId,
+      updatedFields: Object.keys(update)
+    });
+
     res.json({ user: updatedUser });
   } catch (err) {
-    console.error('Profile update error:', err);
-    res.status(500).json({ error: 'Failed to update profile', details: err.message });
+    console.error('Profile update error:', {
+      error: err.message,
+      stack: err.stack,
+      userId: req.userId
+    });
+    res.status(500).json({ 
+      error: 'Failed to update profile',
+      details: err.message
+    });
   }
 });
 
