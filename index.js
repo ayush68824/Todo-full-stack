@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
 const { authenticateUser } = require('./middleware/auth');
@@ -13,6 +14,18 @@ const scheduleNotifications = require('./utils/notifications');
 // Load environment variables
 dotenv.config();
 
+// Create necessary directories
+const avatarDir = path.join(__dirname, 'public', 'avatar');
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+
+// Create directories if they don't exist
+[avatarDir, uploadsDir].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`Created directory: ${dir}`);
+  }
+});
+
 // Debug: Log environment variables
 console.log('Environment Variables:');
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
@@ -20,13 +33,6 @@ console.log('PORT:', process.env.PORT);
 console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 const app = express();
-
-// Create uploads directory if it doesn't exist
-const fs = require('fs');
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
 
 // Security middleware
 app.use(helmet({

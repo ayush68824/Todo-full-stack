@@ -11,13 +11,29 @@ const router = express.Router();
 // Multer setup for photo upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../public/avatar'));
+    const uploadDir = path.join(__dirname, '..', 'public', 'avatar');
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG and GIF are allowed.'));
+    }
+  }
+});
 
 // Google OAuth2 client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -64,35 +80,72 @@ router.post('/google', async (req, res) => {
   }
 });
 
-// Profile update (name and photo)
-router.put('/profile', authenticateUser, upload.single('photo'), async (req, res) => {
-  try {
-    const userId = req.userId || (req.user && req.user._id);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const update = { name: req.body.name };
-    if (req.file) {
-      update.photo = `/avatar/${req.file.filename}`;
-    }
-    const user = await User.findByIdAndUpdate(userId, update, { new: true });
-    res.json({ user });
-  } catch (err) {
-    console.error('Profile update error:', err);
-    res.status(400).json({ error: 'Failed to update profile', details: err.message || err });
-  }
-});
-
+// Login route with improved error handling
 router.post('/login', async (req, res) => {
   try {
+    console.log('Login attempt:', { email: req.body.email });
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      console.log('Login failed: Missing email or password');
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user) {
+      console.log('Login failed: User not found');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      console.log('Login failed: Invalid password');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    console.log('Login successful:', { userId: user._id });
     res.json({ token, user });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ error: 'Login failed', details: err.message || err });
+    res.status(500).json({ error: 'Login failed', details: err.message });
+  }
+});
+
+// Profile update with improved error handling
+router.put('/profile', authenticateUser, upload.single('photo'), async (req, res) => {
+  try {
+    console.log('Profile update attempt:', { userId: req.userId });
+    
+    if (!req.userId) {
+      console.log('Profile update failed: No user ID in request');
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      console.log('Profile update failed: User not found');
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const update = {};
+    if (req.body.name) update.name = req.body.name;
+    if (req.file) {
+      update.photo = `/avatar/${req.file.filename}`;
+      console.log('Photo uploaded:', update.photo);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: update },
+      { new: true }
+    );
+
+    console.log('Profile update successful:', { userId: req.userId });
+    res.json({ user: updatedUser });
+  } catch (err) {
+    console.error('Profile update error:', err);
+    res.status(500).json({ error: 'Failed to update profile', details: err.message });
   }
 });
 
