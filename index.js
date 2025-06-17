@@ -14,20 +14,19 @@ const scheduleNotifications = require('./utils/notifications');
 // Load environment variables
 dotenv.config();
 
-// Create necessary directories
-const createDirectory = (dirPath) => {
-  try {
-    if (!fs.existsSync(dirPath)) {
+// Robust directory creation to handle ENOTDIR errors
+function ensureDirectory(dirPath) {
+  if (fs.existsSync(dirPath)) {
+    if (!fs.lstatSync(dirPath).isDirectory()) {
+      fs.unlinkSync(dirPath); // Remove file if exists
       fs.mkdirSync(dirPath, { recursive: true });
-      console.log(`Created directory: ${dirPath}`);
-    } else {
-      console.log(`Directory already exists: ${dirPath}`);
+      console.log('Removed file and created directory:', dirPath);
     }
-  } catch (error) {
-    console.error(`Error creating directory ${dirPath}:`, error);
-    throw error;
+  } else {
+    fs.mkdirSync(dirPath, { recursive: true });
+    console.log('Created directory:', dirPath);
   }
-};
+}
 
 // Define upload directories
 const uploadDirs = {
@@ -35,14 +34,14 @@ const uploadDirs = {
   uploads: path.join(__dirname, 'public', 'uploads')
 };
 
-// Create all required directories
+// Create all required directories robustly
 try {
   // Create public directory first
   const publicDir = path.join(__dirname, 'public');
-  createDirectory(publicDir);
+  ensureDirectory(publicDir);
 
   // Create upload directories
-  Object.values(uploadDirs).forEach(dir => createDirectory(dir));
+  Object.values(uploadDirs).forEach(dir => ensureDirectory(dir));
   
   console.log('All required directories created successfully');
 } catch (error) {
