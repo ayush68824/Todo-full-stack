@@ -4,6 +4,7 @@ const User = require('../models/User');
 const multer = require('multer');
 const path = require('path');
 const { OAuth2Client } = require('google-auth-library');
+const { authenticateUser } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -60,22 +61,8 @@ router.post('/google', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
-  }
-});
-
 // Profile update (name and photo)
-router.put('/profile', upload.single('photo'), async (req, res) => {
+router.put('/profile', authenticateUser, upload.single('photo'), async (req, res) => {
   try {
     const userId = req.userId || (req.user && req.user._id);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -87,6 +74,20 @@ router.put('/profile', upload.single('photo'), async (req, res) => {
     res.json({ user });
   } catch (err) {
     res.status(400).json({ error: 'Failed to update profile', details: err.message });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed' });
   }
 });
 

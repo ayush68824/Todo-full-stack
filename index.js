@@ -73,6 +73,14 @@ const publicPath = path.join(__dirname, '../public');
 console.log('Serving static files from:', publicPath);
 app.use(express.static(publicPath));
 
+// Serve uploaded files (task images)
+const uploadsPath = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
+
+// Serve avatar files
+const avatarPath = path.join(__dirname, '../public/avatar');
+app.use('/avatar', express.static(avatarPath));
+
 // API Documentation route
 app.get('/', (req, res) => {
   res.json({
