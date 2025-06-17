@@ -5,18 +5,39 @@ const multer = require('multer');
 const path = require('path');
 const { OAuth2Client } = require('google-auth-library');
 const { authenticateUser } = require('../middleware/auth');
+const fs = require('fs');
 
 const router = express.Router();
 
 // Multer setup for photo upload
+const avatarDir = path.join(__dirname, '..', 'public', 'avatar');
+
+// Ensure avatar directory exists
+if (!fs.existsSync(avatarDir)) {
+  fs.mkdirSync(avatarDir, { recursive: true });
+  console.log('Created avatar directory:', avatarDir);
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '..', 'public', 'avatar');
-    cb(null, uploadDir);
+    try {
+      if (!fs.existsSync(avatarDir)) {
+        fs.mkdirSync(avatarDir, { recursive: true });
+      }
+      cb(null, avatarDir);
+    } catch (error) {
+      console.error('Error in multer destination:', error);
+      cb(error);
+    }
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    try {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    } catch (error) {
+      console.error('Error in multer filename:', error);
+      cb(error);
+    }
   }
 });
 
@@ -26,11 +47,16 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only JPEG, PNG and GIF are allowed.'));
+    try {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG and GIF are allowed.'));
+      }
+    } catch (error) {
+      console.error('Error in multer fileFilter:', error);
+      cb(error);
     }
   }
 });

@@ -15,16 +15,40 @@ const scheduleNotifications = require('./utils/notifications');
 dotenv.config();
 
 // Create necessary directories
-const avatarDir = path.join(__dirname, 'public', 'avatar');
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-
-// Create directories if they don't exist
-[avatarDir, uploadsDir].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created directory: ${dir}`);
+const createDirectory = (dirPath) => {
+  try {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+      console.log(`Created directory: ${dirPath}`);
+    } else {
+      console.log(`Directory already exists: ${dirPath}`);
+    }
+  } catch (error) {
+    console.error(`Error creating directory ${dirPath}:`, error);
+    throw error;
   }
-});
+};
+
+// Define upload directories
+const uploadDirs = {
+  avatar: path.join(__dirname, 'public', 'avatar'),
+  uploads: path.join(__dirname, 'public', 'uploads')
+};
+
+// Create all required directories
+try {
+  // Create public directory first
+  const publicDir = path.join(__dirname, 'public');
+  createDirectory(publicDir);
+
+  // Create upload directories
+  Object.values(uploadDirs).forEach(dir => createDirectory(dir));
+  
+  console.log('All required directories created successfully');
+} catch (error) {
+  console.error('Failed to create required directories:', error);
+  process.exit(1); // Exit if we can't create the directories
+}
 
 // Debug: Log environment variables
 console.log('Environment Variables:');
