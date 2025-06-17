@@ -30,9 +30,10 @@ router.post('/register', upload.single('photo'), async (req, res) => {
     const user = new User({ email, password, name, photo });
     await user.save();
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({ token, user: user.toObject() });
+    res.status(201).json({ token, user });
   } catch (err) {
-    res.status(400).json({ error: 'Registration failed', details: err });
+    console.error('Registration error:', err);
+    res.status(400).json({ error: 'Registration failed', details: err.message || err });
   }
 });
 
@@ -56,9 +57,10 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token: jwtToken, user: user.toObject() });
+    res.json({ token: jwtToken, user });
   } catch (err) {
-    res.status(400).json({ error: 'Google authentication failed', details: err.message });
+    console.error('Google auth error:', err);
+    res.status(400).json({ error: 'Google authentication failed', details: err.message || err });
   }
 });
 
@@ -74,7 +76,8 @@ router.put('/profile', authenticateUser, upload.single('photo'), async (req, res
     const user = await User.findByIdAndUpdate(userId, update, { new: true });
     res.json({ user });
   } catch (err) {
-    res.status(400).json({ error: 'Failed to update profile', details: err.message });
+    console.error('Profile update error:', err);
+    res.status(400).json({ error: 'Failed to update profile', details: err.message || err });
   }
 });
 
@@ -86,9 +89,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: user.toObject() });
+    res.json({ token, user });
   } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Login failed', details: err.message || err });
   }
 });
 
