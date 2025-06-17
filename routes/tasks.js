@@ -1,15 +1,46 @@
 const express = require('express');
 const Task = require('../models/Task');
+const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 
-// Create
-router.post('/', async (req, res) => {
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
+// Create task with optional image upload
+router.post('/', upload.single('image'), async (req, res) => {
   try {
-    const task = new Task({ ...req.body, userId: req.userId });
+    const taskData = {
+      ...req.body,
+      userId: req.userId,
+      image: req.file ? `/uploads/${req.file.filename}` : undefined
+    };
+    
+    const task = new Task(taskData);
     await task.save();
     res.status(201).json(task);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to create task' });
+    console.error('Error creating task:', err);
+    res.status(400).json({ error: 'Failed to create task', details: err.message });
   }
 });
 
@@ -35,12 +66,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Update
-router.put('/:id', async (req, res) => {
+// Update task with optional image upload
+router.put('/:id', upload.single('image'), async (req, res) => {
   try {
+    const updateData = {
+      ...req.body,
+      image: req.file ? `/uploads/${req.file.filename}` : undefined
+    };
+    
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.userId },
-      req.body,
+      updateData,
       { new: true }
     );
     if (!task) return res.status(404).json({ error: 'Task not found' });
@@ -50,7 +86,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete
+// Delete task
 router.delete('/:id', async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({ _id: req.params.id, userId: req.userId });

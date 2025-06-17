@@ -21,6 +21,13 @@ console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 const app = express();
 
+// Create uploads directory if it doesn't exist
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP for development
@@ -44,6 +51,20 @@ const limiter = rateLimit({
   max: 100 // limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
+
+// Trust proxy for rate limiter
+app.set('trust proxy', 1);
+
+// Add detailed request logging middleware
+app.use((req, res, next) => {
+  console.log('=== INCOMING REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  console.log('=====================');
+  next();
+});
 
 app.use(express.json());
 
@@ -162,6 +183,40 @@ app.use('/api/tasks', authenticateUser, taskRoutes);
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+// Task creation endpoint
+app.post('/api/tasks', authenticateUser, async (req, res) => {
+  try {
+    console.log('=== TASK CREATION REQUEST ===');
+    console.log('User ID:', req.userId);
+    console.log('Request Body:', req.body);
+    
+    const { title, description, dueDate, priority, category } = req.body;
+    
+    if (!title) {
+      console.log('Validation Error: Title is required');
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
+    const task = new Task({
+      title,
+      description,
+      dueDate,
+      priority,
+      category,
+      userId: req.userId
+    });
+
+    console.log('Creating task:', task);
+    const savedTask = await task.save();
+    console.log('Task created successfully:', savedTask);
+    
+    res.status(201).json(savedTask);
+  } catch (error) {
+    console.error('Error creating task:', error);
+    res.status(400).json({ error: 'Failed to create task', details: error.message });
+  }
 });
 
 // Error handling middleware
