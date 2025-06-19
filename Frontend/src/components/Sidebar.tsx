@@ -6,6 +6,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { getFullImageUrl } from '../utils/api'
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -23,7 +24,7 @@ const Sidebar: React.FC = () => {
   const drawerContent = (
     <Box display="flex" flexDirection="column" height="100%">
       <Box display="flex" flexDirection="column" alignItems="center" py={3}>
-        <Avatar src={user?.photo} sx={{ width: 64, height: 64, mb: 1 }} />
+        <Avatar src={getFullImageUrl(user?.photo)} sx={{ width: 64, height: 64, mb: 1 }} />
         <Typography variant="subtitle1" fontWeight={600}>{user?.name || 'User'}</Typography>
         <Typography variant="body2" color="text.secondary">{user?.email || ''}</Typography>
       </Box>

@@ -12,9 +12,11 @@ import {
   Box, 
   Link,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Avatar
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import { getFullImageUrl } from '../utils/api'
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -141,6 +143,7 @@ const Register: React.FC = () => {
               disabled={isLoading}
             />
           </Button>
+          {photo && <Avatar src={typeof photo === 'string' ? getFullImageUrl(photo) : URL.createObjectURL(photo)} alt="User Photo" sx={{ width: 56, height: 56, ml: 2 }} />}
           <Button
             type="submit"
             variant="contained"

@@ -51,5 +51,31 @@ You can deploy the `dist/` folder to any static hosting (Vercel, Netlify, GitHub
 - To change the backend URL or Google OAuth client, update the relevant values in the code.
 - The color palette and theme can be customized in `src/main.tsx`.
 
+## Deployment Checklist (Netlify/Vercel)
+
+1. **Set Environment Variable:**
+   - `VITE_API_URL` should be set to your backend API endpoint (e.g. `https://todo-full-stack-1-9ewe.onrender.com/api`).
+   - In Netlify: Go to Site Settings > Environment Variables > Add `VITE_API_URL`.
+   - In Vercel: Go to Project Settings > Environment Variables > Add `VITE_API_URL`.
+
+2. **SPA Routing:**
+   - Ensure you have a `public/_redirects` file with the following content:
+     ```
+     /*    /index.html   200
+     ```
+   - This ensures client-side routing works on refresh.
+
+3. **Build Command:**
+   - `npm run build`
+
+4. **Publish Directory:**
+   - `dist`
+
+5. **Redeploy:**
+   - After setting the environment variable and building, redeploy your site.
+
+## Environment Variables
+- `VITE_API_URL` (required): The base URL of your backend API (must include `/api` at the end).
+
 ## License
 MIT
