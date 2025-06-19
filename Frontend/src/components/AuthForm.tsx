@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Button, TextField, Typography, Stack, Avatar } from '@mui/material'
+import { getFullImageUrl } from '../utils/api'
 
 interface AuthFormProps {
   title: string
@@ -44,7 +45,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               {photoUrl ? 'Change Photo' : 'Upload Photo'}
               <input type="file" accept="image/*" hidden onChange={onPhotoChange} />
             </Button>
-            {photoUrl && <Avatar src={photoUrl} alt="User Photo" />}
+            {photoUrl && <Avatar src={getFullImageUrl(photoUrl)} alt="User Photo" />}
           </Box>
         )}
         {error && <Typography color="error">{error}</Typography>}

@@ -17,6 +17,7 @@ import {
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import type { Task } from '../utils/api';
+import { getFullImageUrl } from '../utils/api'
 
 interface TaskCardProps {
   task: Task;
@@ -101,7 +102,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
             }
           }}
         >
-          <img src={task.image.startsWith('http') ? task.image : `${import.meta.env.VITE_API_URL?.replace('/api','') || ''}${task.image}`}
+          <img src={getFullImageUrl(task.image)}
                alt={task.title} />
         </Box>
       )}

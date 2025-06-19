@@ -4,7 +4,7 @@ import { Box, Typography, Paper, Button, TextField, Avatar, IconButton, Divider,
 import { useNavigate } from 'react-router-dom'
 import { PhotoCamera } from '@mui/icons-material'
 import axios from 'axios'
-import { API_URL } from '../utils/api'
+import { API_URL, getFullImageUrl } from '../utils/api'
 
 const Settings: React.FC = () => {
   const { user, token, updateUser, logout } = useAuth()
@@ -110,7 +110,7 @@ const Settings: React.FC = () => {
         {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
         <Box display="flex" alignItems="center" mb={3}>
           <Avatar
-            src={photoPreview || undefined}
+            src={getFullImageUrl(photoPreview)}
             sx={{ width: 100, height: 100, mr: 2 }}
           />
           <Box>
