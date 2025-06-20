@@ -1,19 +1,8 @@
 import React from 'react'
 import { Box, Button, TextField, Typography, Stack, Avatar } from '@mui/material'
-import { getFullImageUrl } from '../utils/api'
+import { getFullImageUrl } from '../utils/api.js'
 
-interface AuthFormProps {
-  title: string
-  fields: { name: string; label: string; type?: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }[]
-  onSubmit: (e: React.FormEvent) => void
-  error?: string
-  submitLabel: string
-  showPhotoUpload?: boolean
-  photoUrl?: string | null
-  onPhotoChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-}
-
-const AuthForm: React.FC<AuthFormProps> = ({
+const AuthForm = ({
   title,
   fields,
   onSubmit,

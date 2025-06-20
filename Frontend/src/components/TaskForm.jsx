@@ -18,24 +18,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-interface TaskFormProps {
-  open: boolean;
-  onSubmit: (taskData: FormData) => Promise<void>;
-  onClose: () => void;
-  initialData?: {
-    title?: string;
-    description?: string;
-    status?: string;
-    priority?: string;
-    dueDate?: string;
-    image?: string;
-    _id?: string;
-  };
-  loading?: boolean;
-  submitLabel?: string;
-}
-
-const TaskForm: React.FC<TaskFormProps> = ({
+const TaskForm = ({
   open,
   onSubmit,
   onClose,
@@ -47,13 +30,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
   const [description, setDescription] = useState(initialData.description || '');
   const [status, setStatus] = useState(initialData.status || 'Not Started');
   const [priority, setPriority] = useState(initialData.priority || 'Moderate');
-  const [dueDate, setDueDate] = useState<Date | null>(initialData.dueDate ? new Date(initialData.dueDate) : null);
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData.image || null);
-  const [error, setError] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState(initialData.dueDate ? new Date(initialData.dueDate) : null);
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(initialData.image || null);
+  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!title.trim()) {
@@ -89,14 +72,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
       
       // Close dialog
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       setError(error.message || 'Failed to create task');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -111,7 +94,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
       const reader = new FileReader();
       reader.onload = ev => {
         if (ev.target?.result) {
-          setImagePreview(ev.target.result as string);
+          setImagePreview(ev.target.result);
         }
       };
       reader.readAsDataURL(file);

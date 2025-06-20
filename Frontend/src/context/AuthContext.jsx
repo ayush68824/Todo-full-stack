@@ -1,28 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
-import { getFullImageUrl, API_URL } from '../utils/api'
+import { getFullImageUrl, API_URL } from '../utils/api.js'
 
-interface User {
-  _id: string
-  name: string
-  email: string
-  photo?: string
-}
-
-interface AuthContextType {
-  user: User | null
-  token: string | null
-  loading: boolean
-  error: string | null
-  login: (email: string, password: string) => Promise<void>
-  register: (data: FormData) => Promise<void>
-  logout: () => void
-  googleSignIn: (token: string) => Promise<void>
-  setError: (msg: string | null) => void
-  updateUser: (user: User) => void
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext(undefined)
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext)
@@ -30,11 +10,11 @@ export const useAuth = () => {
   return ctx
 }
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const t = localStorage.getItem('token')
@@ -48,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email, password) => {
     setLoading(true)
     setError(null)
     try {
@@ -57,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({ ...res.data.user, photo: getFullImageUrl(res.data.user.photo) })
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
-    } catch (e: any) {
+    } catch (e) {
       setError(e.response?.data?.message || 'Login failed')
       throw e
     } finally {
@@ -65,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  const register = async (data: FormData) => {
+  const register = async (data) => {
     setLoading(true)
     setError(null)
     try {
@@ -74,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({ ...res.data.user, photo: getFullImageUrl(res.data.user.photo) })
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
-    } catch (e: any) {
+    } catch (e) {
       setError(e.response?.data?.message || 'Registration failed')
       throw e
     } finally {
@@ -82,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  const googleSignIn = async (googleToken: string) => {
+  const googleSignIn = async (googleToken) => {
     setLoading(true)
     setError(null)
     try {
@@ -91,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({ ...res.data.user, photo: getFullImageUrl(res.data.user.photo) })
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
-    } catch (e: any) {
+    } catch (e) {
       setError(e.response?.data?.message || 'Google sign-in failed')
       throw e
     } finally {
@@ -106,8 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user')
   }
 
-  const updateUser = (updatedUser: User) => {
-    setUser(updatedUser)
+  const updateUser = (updatedUser) => {
+    setUser({ ...updatedUser, photo: getFullImageUrl(updatedUser.photo) })
     localStorage.setItem('user', JSON.stringify(updatedUser))
   }
 

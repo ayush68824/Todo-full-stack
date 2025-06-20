@@ -1,9 +1,15 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@emotion/react': path.resolve(__dirname, 'node_modules/@emotion/react'),
+      '@emotion/styled': path.resolve(__dirname, 'node_modules/@emotion/styled'),
+    },
+  },
   server: {
     port: 5173,
     host: true,
@@ -22,7 +28,6 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           mui: ['@mui/material', '@mui/icons-material', '@mui/x-date-pickers'],
-          emotion: ['@emotion/react', '@emotion/styled'],
           utils: ['axios', 'date-fns', 'react-toastify']
         },
       },
@@ -30,8 +35,5 @@ export default defineConfig({
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
-  },
-  optimizeDeps: {
-    include: ['@emotion/react', '@emotion/styled'],
-  },
-})
+  }
+}) 

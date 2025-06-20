@@ -1,22 +1,22 @@
 import React, { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.jsx'
 import { Box, Typography, Paper, Button, TextField, Avatar, IconButton, Divider, Alert } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { PhotoCamera } from '@mui/icons-material'
 import axios from 'axios'
-import { API_URL, getFullImageUrl } from '../utils/api'
+import { API_URL, getFullImageUrl } from '../utils/api.js'
 
-const Settings: React.FC = () => {
+const Settings = () => {
   const { user, token, updateUser, logout } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState(user?.name || '')
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(user?.photo || null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [photo, setPhoto] = useState(null)
+  const [photoPreview, setPhotoPreview] = useState(user?.photo || null)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e) => {
     const file = e.target.files?.[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -31,7 +31,7 @@ const Settings: React.FC = () => {
       const reader = new FileReader()
       reader.onload = ev => {
         if (ev.target?.result) {
-          setPhotoPreview(ev.target.result as string)
+          setPhotoPreview(ev.target.result)
         }
       }
       reader.onerror = () => {
@@ -83,7 +83,7 @@ const Settings: React.FC = () => {
       updateUser(response.data.user)
       setSuccess('Profile updated successfully')
       setPhoto(null) // Clear the photo state after successful upload
-    } catch (err: any) {
+    } catch (err) {
       console.error('Profile update error:', err)
       const errorMessage = err.response?.data?.error || err.response?.data?.details || err.message || 'Failed to update profile'
       setError(errorMessage)

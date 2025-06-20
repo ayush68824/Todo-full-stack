@@ -4,9 +4,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import SettingsIcon from '@mui/icons-material/Settings'
 import LogoutIcon from '@mui/icons-material/Logout'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { getFullImageUrl } from '../utils/api'
+import { getFullImageUrl } from '../utils/api.js'
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -14,7 +14,7 @@ const navItems = [
   { label: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ]
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()

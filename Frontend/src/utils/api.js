@@ -42,39 +42,18 @@ api.interceptors.response.use(
   }
 )
 
-export interface Task {
-  _id: string;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  dueDate?: string;
-  image?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TaskData {
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  dueDate?: string;
-  image?: File;
-}
-
 // Task endpoints
-export const getTasks = async (): Promise<Task[]> => {
+export const getTasks = async () => {
   try {
     const response = await api.get('/tasks')
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching tasks:', error)
     throw new Error(error.response?.data?.message || 'Failed to fetch tasks')
   }
 }
 
-export const createTask = async (formData: FormData): Promise<Task> => {
+export const createTask = async (formData) => {
   try {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -95,13 +74,13 @@ export const createTask = async (formData: FormData): Promise<Task> => {
     }
 
     return await response.json()
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating task:', error)
     throw new Error(error.message || 'Failed to create task')
   }
 }
 
-export const updateTask = async (id: string, formData: FormData): Promise<Task> => {
+export const updateTask = async (id, formData) => {
   try {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -122,34 +101,34 @@ export const updateTask = async (id: string, formData: FormData): Promise<Task> 
     }
 
     return await response.json()
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating task:', error)
     throw new Error(error.message || 'Failed to update task')
   }
 }
 
-export const deleteTask = async (id: string): Promise<void> => {
+export const deleteTask = async (id) => {
   try {
     await api.delete(`/tasks/${id}`)
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error deleting task:', error)
     throw new Error(error.response?.data?.message || 'Failed to delete task')
   }
 }
 
 // Auth endpoints
-export const login = async (email: string, password: string) => {
+export const login = async (email, password) => {
   try {
     const response = await api.post('/auth/login', { email, password })
     localStorage.setItem('token', response.data.token)
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error logging in:', error)
     throw new Error(error.response?.data?.message || 'Failed to login')
   }
 }
 
-export const register = async (formData: FormData) => {
+export const register = async (formData) => {
   try {
     const response = await api.post('/auth/register', formData, {
       headers: {
@@ -157,7 +136,7 @@ export const register = async (formData: FormData) => {
       },
     })
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error registering:', error)
     throw new Error(error.response?.data?.message || 'Failed to register')
   }
@@ -167,7 +146,7 @@ export const logout = async () => {
   try {
     await api.post('/auth/logout')
     localStorage.removeItem('token')
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error logging out:', error)
     throw new Error(error.response?.data?.message || 'Failed to logout')
   }
@@ -177,14 +156,16 @@ export const getCurrentUser = async () => {
   try {
     const res = await api.get('/auth/me')
     return res.data
-  } catch (error: any) {
+  } catch (error) {
     console.error('Get current user error:', error)
     throw error
   }
 }
 
-export const getFullImageUrl = (url?: string | null) => {
-  if (!url) return undefined;
+export const getFullImageUrl = (url) => {
+  if (!url) return '/default-avatar.png'; // fallback image in public folder
   const base = API_URL.replace('/api','');
-  return url.startsWith('http') ? url : `${base}${url}`;
+  const fullUrl = url.startsWith('http') ? url : `${base}${url}`;
+  console.log('getFullImageUrl:', { url, fullUrl });
+  return fullUrl;
 }; 

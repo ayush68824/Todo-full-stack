@@ -1,12 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import App from './App.jsx'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -22,7 +22,7 @@ const theme = createTheme({
 
 const GOOGLE_CLIENT_ID = '665955875780-4956p9i9u01rqi0rhmqe7nnge992mbpc.apps.googleusercontent.com'
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -54,4 +54,4 @@ createRoot(document.getElementById('root')!).render(
       </LocalizationProvider>
     </ThemeProvider>
   </StrictMode>,
-)
+) 

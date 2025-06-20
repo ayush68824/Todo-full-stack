@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { getTasks } from '../utils/api';
+import { useAuth } from '../context/AuthContext.jsx';
+import { getTasks, deleteTask } from '../utils/api.js';
 import { Box, Typography, Grid, CircularProgress, Alert, TextField, MenuItem, Select, InputLabel, FormControl, Paper } from '@mui/material';
-import TaskCard from '../components/TaskCard';
-import type { Task } from '../utils/api';
+import TaskCard from '../components/TaskCard.jsx';
 
 const priorityOrder = { High: 1, Moderate: 2, Low: 3 };
 
-const MyTasks: React.FC = () => {
+const MyTasks = () => {
   const { token, user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [priority, setPriority] = useState('');
 
@@ -26,10 +25,19 @@ const MyTasks: React.FC = () => {
       const data = await getTasks();
       setTasks(Array.isArray(data) ? data : []);
       setError(null);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'Failed to load tasks');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+      await fetchTasks();
+    } catch (err) {
+      setError(err.message || 'Failed to delete task');
     }
   };
 
@@ -38,7 +46,7 @@ const MyTasks: React.FC = () => {
       (!search || task.title.toLowerCase().includes(search.toLowerCase())) &&
       (!priority || task.priority === priority)
     )
-    .sort((a, b) => priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder]);
+    .sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
   if (!user) return null;
 
@@ -85,7 +93,7 @@ const MyTasks: React.FC = () => {
                 <TaskCard
                   task={task}
                   onEdit={() => {}}
-                  onDelete={() => {}}
+                  onDelete={() => handleDeleteTask(task._id)}
                 />
               </Grid>
             ))}

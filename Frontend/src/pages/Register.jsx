@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.jsx'
 import { GoogleLogin } from '@react-oauth/google'
-import type { CredentialResponse } from '@react-oauth/google'
 import { 
   Container, 
   Paper, 
@@ -16,7 +15,7 @@ import {
   Avatar
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { getFullImageUrl } from '../utils/api'
+import { getFullImageUrl } from '../utils/api.js'
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -26,11 +25,11 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(8),
 }))
 
-const Register: React.FC = () => {
+const Register = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [photo, setPhoto] = useState<File | null>(null)
+  const [photo, setPhoto] = useState(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { register, googleSignIn, user } = useAuth()
@@ -40,7 +39,7 @@ const Register: React.FC = () => {
     if (user) navigate('/dashboard')
   }, [user, navigate])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
@@ -61,13 +60,13 @@ const Register: React.FC = () => {
     }
   }
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setPhoto(e.target.files[0])
     }
   }
 
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     setIsLoading(true)
     setError('')
     try {

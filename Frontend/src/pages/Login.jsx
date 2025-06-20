@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.jsx'
 import { 
   Container, 
   Paper, 
@@ -22,7 +22,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(8),
 }))
 
-const Login: React.FC = () => {
+const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -36,7 +36,7 @@ const Login: React.FC = () => {
     }
   }, [user, navigate])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')

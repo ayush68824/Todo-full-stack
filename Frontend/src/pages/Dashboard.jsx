@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { getTasks, createTask, updateTask } from '../utils/api'
+import { useAuth } from '../context/AuthContext.jsx'
+import { getTasks, createTask, updateTask, deleteTask } from '../utils/api.js'
 import { CircularProgress, Box, Alert, Button, Snackbar, Grid, Typography, Paper } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import TaskForm from '../components/TaskForm'
+import TaskForm from '../components/TaskForm.jsx'
 import AddIcon from '@mui/icons-material/Add'
-import type { Task } from '../utils/api'
-import TaskCard from '../components/TaskCard'
+import TaskCard from '../components/TaskCard.jsx'
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const { token, user } = useAuth()
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(null)
   const [openTaskForm, setOpenTaskForm] = useState(false)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error';
-  }>({
+  const [selectedTask, setSelectedTask] = useState(null)
+  const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
@@ -41,7 +36,7 @@ const Dashboard: React.FC = () => {
       const data = await getTasks()
       setTasks(Array.isArray(data) ? data : [])
       setError(null)
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'Failed to load tasks')
       setSnackbar({
         open: true,
@@ -53,7 +48,7 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const handleCreateTask = async (formData: FormData) => {
+  const handleCreateTask = async (formData) => {
     try {
       await createTask(formData)
       await fetchTasks()
@@ -63,7 +58,7 @@ const Dashboard: React.FC = () => {
         message: 'Task created successfully',
         severity: 'success'
       })
-    } catch (error: any) {
+    } catch (error) {
       setError(error.message || 'Failed to create task')
       setSnackbar({
         open: true,
@@ -73,12 +68,12 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const handleEditTask = (task: Task) => {
+  const handleEditTask = (task) => {
     setSelectedTask(task)
     setOpenTaskForm(true)
   }
 
-  const handleUpdateTask = async (formData: FormData) => {
+  const handleUpdateTask = async (formData) => {
     if (!token || !selectedTask) return
     try {
       await updateTask(selectedTask._id, formData)
@@ -90,7 +85,7 @@ const Dashboard: React.FC = () => {
         message: 'Task updated successfully',
         severity: 'success'
       })
-    } catch (err: any) {
+    } catch (err) {
       setSnackbar({
         open: true,
         message: err.message || 'Failed to update task',
@@ -98,6 +93,24 @@ const Dashboard: React.FC = () => {
       })
     }
   }
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+      await fetchTasks();
+      setSnackbar({
+        open: true,
+        message: 'Task deleted successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to delete task',
+        severity: 'error'
+      });
+    }
+  };
 
   if (!user) return null
 
@@ -135,7 +148,7 @@ const Dashboard: React.FC = () => {
                 <TaskCard
                   task={task}
                   onEdit={() => handleEditTask(task)}
-                  onDelete={() => {}}
+                  onDelete={() => handleDeleteTask(task._id)}
                 />
               </Grid>
             ))}

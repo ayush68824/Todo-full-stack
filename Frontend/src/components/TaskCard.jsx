@@ -16,20 +16,13 @@ import {
 } from '@mui/material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
-import type { Task } from '../utils/api';
-import { getFullImageUrl } from '../utils/api'
+import { getFullImageUrl } from '../utils/api.js'
 
-interface TaskCardProps {
-  task: Task;
-  onEdit: () => void;
-  onDelete: () => void;
-}
-
-const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+const TaskCard = ({ task, onEdit, onDelete }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -52,7 +45,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
     onDelete();
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority) => {
     switch (priority.toLowerCase()) {
       case 'high':
         return '#f44336';
@@ -65,7 +58,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'completed':
         return '#4caf50';
