@@ -38,10 +38,18 @@ const uploadDirs = {
 try {
   // Create public directory first
   const publicDir = path.join(__dirname, 'public');
-  ensureDirectory(publicDir);
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+    console.log('Created public directory:', publicDir);
+  }
 
   // Create upload directories
-  Object.values(uploadDirs).forEach(dir => ensureDirectory(dir));
+  Object.entries(uploadDirs).forEach(([name, dir]) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created ${name} directory:`, dir);
+    }
+  });
   
   console.log('All required directories created successfully');
 } catch (error) {
@@ -111,13 +119,17 @@ const publicPath = path.join(__dirname, '../public');
 console.log('Serving static files from:', publicPath);
 app.use(express.static(publicPath));
 
-// Serve uploaded files (task images)
-const uploadsPath = path.join(__dirname, 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+// Serve uploaded files (task images) with CORS headers
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(path.join(__dirname, 'public', 'uploads')));
 
-// Serve avatar files
-const avatarPath = path.join(__dirname, '../public/avatar');
-app.use('/avatar', express.static(avatarPath));
+// Serve avatar files with CORS headers
+app.use('/avatar', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(path.join(__dirname, 'public', 'avatar')));
 
 // API Documentation route
 app.get('/', (req, res) => {

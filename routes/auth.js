@@ -167,6 +167,15 @@ router.put('/profile', authenticateUser, upload.single('photo'), async (req, res
 
     if (req.file) {
       try {
+        // Delete old photo if it exists
+        if (user.photo) {
+          const oldPhotoPath = path.join(__dirname, '..', 'public', user.photo);
+          if (fs.existsSync(oldPhotoPath)) {
+            fs.unlinkSync(oldPhotoPath);
+            console.log('Deleted old photo:', oldPhotoPath);
+          }
+        }
+
         const photoPath = `/avatar/${req.file.filename}`;
         update.photo = photoPath;
         console.log('Photo uploaded successfully:', photoPath);
@@ -199,14 +208,10 @@ router.put('/profile', authenticateUser, upload.single('photo'), async (req, res
 
     res.json({ user: updatedUser });
   } catch (err) {
-    console.error('Profile update error:', {
-      error: err.message,
-      stack: err.stack,
-      userId: req.userId
-    });
+    console.error('Profile update error:', err);
     res.status(500).json({ 
-      error: 'Failed to update profile',
-      details: err.message
+      error: 'Failed to update profile', 
+      details: err.message || 'An unexpected error occurred'
     });
   }
 });
