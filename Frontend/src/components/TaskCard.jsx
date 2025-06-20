@@ -16,7 +16,12 @@ import {
 } from '@mui/material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
+<<<<<<< HEAD:Frontend/src/components/TaskCard.jsx
 import { getFullImageUrl } from '../utils/api.js'
+=======
+import type { Task } from '../utils/api';
+import { getFullImageUrl } from '../utils/api'
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/components/TaskCard.tsx
 
 const TaskCard = ({ task, onEdit, onDelete }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);

@@ -35,4 +35,8 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@emotion/react', '@emotion/styled'],
   },
+<<<<<<< HEAD:Frontend/vite.config.js
 }) 
+=======
+})
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/vite.config.ts

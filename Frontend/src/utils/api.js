@@ -162,10 +162,17 @@ export const getCurrentUser = async () => {
   }
 }
 
+<<<<<<< HEAD:Frontend/src/utils/api.js
 export const getFullImageUrl = (url) => {
   if (!url) return '/default-avatar.png'; // fallback image in public folder
   const base = API_URL.replace('/api','');
   const fullUrl = url.startsWith('http') ? url : `${base}${url}`;
   console.log('getFullImageUrl:', { url, fullUrl });
   return fullUrl;
+=======
+export const getFullImageUrl = (url?: string | null) => {
+  if (!url) return undefined;
+  const base = API_URL.replace('/api','');
+  return url.startsWith('http') ? url : `${base}${url}`;
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/utils/api.ts
 }; 

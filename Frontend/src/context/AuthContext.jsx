@@ -1,8 +1,34 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
+<<<<<<< HEAD:Frontend/src/context/AuthContext.jsx
 import { getFullImageUrl, API_URL } from '../utils/api.js'
 
 const AuthContext = createContext(undefined)
+=======
+import { getFullImageUrl, API_URL } from '../utils/api'
+
+interface User {
+  _id: string
+  name: string
+  email: string
+  photo?: string
+}
+
+interface AuthContextType {
+  user: User | null
+  token: string | null
+  loading: boolean
+  error: string | null
+  login: (email: string, password: string) => Promise<void>
+  register: (data: FormData) => Promise<void>
+  logout: () => void
+  googleSignIn: (token: string) => Promise<void>
+  setError: (msg: string | null) => void
+  updateUser: (user: User) => void
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/context/AuthContext.tsx
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext)

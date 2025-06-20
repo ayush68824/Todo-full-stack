@@ -12,12 +12,20 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+<<<<<<< HEAD
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
     "@mui/x-date-pickers": "^8.5.3",
     "@react-oauth/google": "^0.12.2",
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.9.0",
+=======
+    "@mui/icons-material": "^5.15.10",
+    "@mui/material": "^5.14.0",
+    "@mui/x-date-pickers": "^8.5.2",
+    "@react-oauth/google": "^0.12.1",
+    "axios": "^1.6.7",
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9
     "date-fns": "^4.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

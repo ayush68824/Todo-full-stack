@@ -6,7 +6,11 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate, useLocation } from 'react-router-dom'
+<<<<<<< HEAD:Frontend/src/components/Sidebar.jsx
 import { getFullImageUrl } from '../utils/api.js'
+=======
+import { getFullImageUrl } from '../utils/api'
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/components/Sidebar.tsx
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },

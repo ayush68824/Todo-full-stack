@@ -1,6 +1,10 @@
 import React from 'react'
 import { Box, Button, TextField, Typography, Stack, Avatar } from '@mui/material'
+<<<<<<< HEAD:Frontend/src/components/AuthForm.jsx
 import { getFullImageUrl } from '../utils/api.js'
+=======
+import { getFullImageUrl } from '../utils/api'
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/components/AuthForm.tsx
 
 const AuthForm = ({
   title,

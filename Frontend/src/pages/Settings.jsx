@@ -4,7 +4,11 @@ import { Box, Typography, Paper, Button, TextField, Avatar, IconButton, Divider,
 import { useNavigate } from 'react-router-dom'
 import { PhotoCamera } from '@mui/icons-material'
 import axios from 'axios'
+<<<<<<< HEAD:Frontend/src/pages/Settings.jsx
 import { API_URL, getFullImageUrl } from '../utils/api.js'
+=======
+import { API_URL, getFullImageUrl } from '../utils/api'
+>>>>>>> d1d30f5f73897894f9d369f1f4c8bb8a3c1c96b9:Frontend/src/pages/Settings.tsx
 
 const Settings = () => {
   const { user, token, updateUser, logout } = useAuth()
